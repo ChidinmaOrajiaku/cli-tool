@@ -29,35 +29,49 @@ program
 .action(() => {
   let answer, actionName;
   const actions = ['+', "-", "/", "*"];
+
+  // get answer.js path
   const answerFile = path.join(
     process.cwd(),
     'answer.js'
   );
+
+  // create answer.js file in current directory
   fs.openSync(answerFile, 'a');
 
   co(function*() {
+    console.log("This program perfoms specified arithmetic operation on input")
+
+    // prompt first number input
     let a = yield prompt("a: ");
+
+    // keep prompting until user enters a valid input a
+    while(!a || isNaN(a)){
+      console.log('Please input a valid number for a')
+      a = yield prompt("a: ");
+    };
+
+    // prompt second number input
     let b = yield prompt("b: ");
 
-    if(!a || !b){
-      console.log('Inputs cannot be empty')
-      process.exit(1)
+    // keep prompting until user enters a valid input b
+    while(!b || isNaN(b)){
+      console.log('Please input a valid number for b')
+      b = yield prompt("b: ");
     };
 
-    a = parseInt(a);
-    b = parseInt(b);
+    // prompt user to input required action
+    let action = yield prompt("action (+, -, /, *): ");
 
-    if (isNaN(a) || isNaN(b)){
-      console.log('Please input a valid number')
-      process.exit(1)
+    // keep prompting user until valid action is entered 
+    while(!actions.includes(action)){
+      console.log("Action can only include +, -, / or *)")
+      action = yield prompt("action (+, -, /, *): ");
     };
 
-    const action = yield prompt("action (+, -, /, *): ");
-
-    if(!actions.includes(action)){
-      console.log("Please input a valid action")
-      process.exit(1)
-    };
+    // perform arithmetic operation on input
+    a = parseInt(a)
+    b = parseInt(b)
 
     switch(action) {
       case "+": 
@@ -86,16 +100,19 @@ program
         };
 
         const searchRegex = new RegExp(`\\bconst ${actionName}${a}And${b}\\b`);
+
         if (actionName !== "divide"){
           searchRegex2 = new RegExp(`\\bconst ${actionName}${b}And${a}\\b`);
         };
 
+        // search if variable name already exists in file
         if (data.search(searchRegex) <= 0) {
+          // append answer to file
           fs.appendFileSync(
             answerFile,
             `const ${actionName}${a}And${b}= ${answer}` + '\n'
           );
-        } ;
+        };
         console.log(answer)
         process.exit(0)
       });
