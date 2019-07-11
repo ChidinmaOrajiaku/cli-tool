@@ -30,15 +30,6 @@ program
   let answer, actionName;
   const actions = ['+', "-", "/", "*"];
 
-  // get answer.js path
-  const answerFile = path.join(
-    process.cwd(),
-    'answer.js'
-  );
-
-  // create answer.js file in current directory
-  fs.openSync(answerFile, 'a');
-
   co(function*() {
     console.log("This program perfoms specified arithmetic operation on input")
 
@@ -91,6 +82,15 @@ program
         actionName = "multiply";
       break;
     };
+
+    // get answer.js path
+    const answerFile = path.join(
+      process.cwd(),
+      'answer.js'
+    );
+
+    // create answer.js file in current directory
+    fs.openSync(answerFile, 'a');
 
     try {
       fs.readFile(answerFile, "utf8", (error, data) => {
